@@ -3,8 +3,10 @@ package parsers
 import scala.util.parsing.combinator._
 
 object SampleParser extends JavaTokenParsers {
-  def number = floatingPointNumber
-  def twoNumbers = floatingPointNumber ~ floatingPointNumber
+  def number: Parser[Float] = floatingPointNumber ^^ { _.toFloat }
+  def twoNumbers: Parser[Float] = number ~ number ^^ { x => 
+    x._1 * x._2
+  }
 }
 
 object ParserExample extends App {
