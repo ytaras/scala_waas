@@ -13,7 +13,9 @@ object WorkflowParsers extends JavaTokenParsers {
   def workflows = workflow.*
   def workflow = ("workflow" ~> ident <~ "{") ~ step.* <~ ("}" ~ ";")
   def step = ("start".? <~ "step") ~ ident ~ goesTo.? <~ ";"
-  def goesTo = ("goes" ~ "to") ~> (ident <~ ",").* ~ ident
+  def goesTo: Parser[List[String]] = ("goes" ~ "to") ~> (ident <~ ",").* ~ ident ^^ {
+     case list ~ last => list :+ last
+  }
 }
 
 object ParserExample extends App {
