@@ -1,6 +1,7 @@
 package parsers
 
 import scala.util.parsing.combinator._
+import model._
 
 object SampleParser extends JavaTokenParsers {
   def number: Parser[Float] = floatingPointNumber ^^ { _.toFloat }
@@ -10,9 +11,13 @@ object SampleParser extends JavaTokenParsers {
 }
 
 object WorkflowParsers extends JavaTokenParsers {
-  def workflows = workflow.*
-  def workflow = ("workflow" ~> ident <~ "{") ~ step.* <~ ("}" ~ ";")
-  def step = ("start".? <~ "step") ~ ident ~ goesTo.? <~ ";"
+  def workflows: Parser[List[Workflow]] = workflow.*
+  def workflow: Parser[Workflow] = ("workflow" ~> ident <~ "{") ~ step.* <~ ("}" ~ ";") ^^ {
+    _ => ???
+  }
+  def step: Parser[Step] = ("start".? <~ "step") ~ ident ~ goesTo.? <~ ";" ^^ {
+     _ => ???
+  }
   def goesTo: Parser[List[String]] = ("goes" ~ "to") ~> (ident <~ ",").* ~ ident ^^ {
      case list ~ last => list :+ last
   }
