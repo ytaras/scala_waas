@@ -13,10 +13,13 @@ object SampleParser extends JavaTokenParsers {
 object WorkflowParsers extends JavaTokenParsers {
   def workflows: Parser[List[Workflow]] = workflow.*
   def workflow: Parser[Workflow] = ("workflow" ~> ident <~ "{") ~ step.* <~ ("}" ~ ";") ^^ {
-    _ => ???
+    case name ~ steps => Workflow(name, steps)
   }
   def step: Parser[Step] = ("start".? <~ "step") ~ ident ~ goesTo.? <~ ";" ^^ {
-     _ => ???
+     case mStart ~ name ~ mGoes =>
+          val goesList = mGoes getOrElse Nil
+          val isStart = !mStart.isEmpty
+          Step(name, goesList, isStart)
   }
   def goesTo: Parser[List[String]] = ("goes" ~ "to") ~> (ident <~ ",").* ~ ident ^^ {
      case list ~ last => list :+ last
