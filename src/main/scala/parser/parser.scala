@@ -9,6 +9,13 @@ object SampleParser extends JavaTokenParsers {
   }
 }
 
+object WorkflowParsers extends JavaTokenParsers {
+  def workflows = workflow.*
+  def workflow = ("workflow" ~> ident <~ "{") ~ step.* <~ ("}" ~ ";")
+  def step = ("start".? <~ "step") ~ ident ~ goesTo.? <~ ";"
+  def goesTo = ("goes" ~ "to") ~> (ident <~ ",").* ~ ident
+}
+
 object ParserExample extends App {
   import SampleParser._
 
