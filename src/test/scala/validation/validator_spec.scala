@@ -5,6 +5,7 @@ import org.specs2.ScalaCheck
 import model._
 
 class ValidationSpec extends Specification {
+  import WorkflowValidator._
   val valid = Workflow("wf", List(
     Step("s1", List("s2", "s3"), true),
     Step("s2", List("s3"), false),
@@ -17,12 +18,44 @@ class ValidationSpec extends Specification {
      "pass successfull workflow" in { pending }
   }
   "zero step validator" should {
-     import WorkflowValidator._
      "return None for valid workflow" in {
        zeroStepsValidation(valid) must beNone 
      }
      "return Some for invalid workflow" in {
        zeroStepsValidation(Workflow("wf", Nil)) must beSome
+     }
+  }
+  "no start validator" should {
+     "return None for valid workflow" in {
+       noStartValidator(valid) must beNone 
+     }
+     "return Some for invalid workflow" in {
+       noStartValidator(Workflow("wf", List(
+         Step("s1", Nil, false)
+       ))) must beSome
+     }
+  }
+  "orphan steps validator" should {
+     "return None for valid workflow" in {
+       orphansValidator(valid) must beNone 
+     }
+     "return Some for invalid workflow" in {
+       orphansValidator(Workflow("wf", List(
+         Step("s1", List("s3"), true),
+         Step("s2", List("s3"), false),
+         Step("s3", List("s1"), false)
+       ))) must beSome
+     }
+  }
+  "few start steps validator" should {
+     "return None for valid workflow" in {
+       fewStartsValidator(valid) must beNone 
+     }
+     "return Some for invalid workflow" in {
+       fewStartsValidator(Workflow("wf", List(
+         Step("s1", List("s2"), true),
+         Step("s2", Nil, true)
+       ))) must beSome
      }
   }
 }
