@@ -4,6 +4,7 @@ import model._
 import scalaz._
 import syntax.std.list._
 import syntax.std.option._
+import syntax.std.boolean._
 
 object WorkflowValidator {
   def validate(workflow: Workflow) =
@@ -13,26 +14,20 @@ object WorkflowValidator {
     zeroStepsValidation, noStartValidator, fewStartsValidator, orphansValidator
   )
 
-  // These implementations could be shorter, but I tried to make them
-  // easy to read for imperative programmers
   private def zeroStepsValidation(wf: Workflow) =
-    if (wf.steps.isEmpty) Some("Workflow has 0 steps") else None
+    wf.steps.isEmpty.option("Workflow has 0 steps")
   private def noStartValidator(wf: Workflow): Option[String] =
-    if (wf.steps.filter { _.start}.isEmpty)
-      Some("Workflow has 0 start steps")
-    else None
+    wf.steps.filter { _.start}.isEmpty.option("Workflow has 0 start steps")
   private def fewStartsValidator(wf: Workflow): Option[String] =
-    if (wf.steps.filter { _.start }.length > 1 )
-      Some("Workflow has more that 1 start step")
-    else None
+    (wf.steps.filter { _.start }.length > 1 ).
+      option("Workflow has more that 1 start step")
   private def orphansValidator(wf: Workflow): Option[String] = {
     val references = wf.steps.flatMap { _.goesTo }.toSet
     val notReferenced = wf.steps.filterNot { step =>
       step.start || (references contains step.name)
     }.map { _.name }
 
-    if(notReferenced.isEmpty) None
-    else Some("There are steps that can't be reached")
+    (!notReferenced.isEmpty).option("There are steps that can't be reached")
   }
 
 }
