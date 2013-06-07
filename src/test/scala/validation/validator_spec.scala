@@ -49,36 +49,4 @@ class ValidationSpec extends Specification
     }
     "pass successfull workflow" in { validate(valid) must succeedWith(valid) }
   }
-  "zero step validator" should {
-     "return None for valid workflow" in {
-       zeroStepsValidation(valid) must beNone
-     }
-     "return Some for invalid workflow" in {
-       zeroStepsValidation(emptyWorkflow) must beSome
-     }
-  }
-  "no start validator" should {
-     "return None for valid workflow" in {
-       noStartValidator(valid) must beNone
-     }
-     "return Some for invalid workflow" in {
-       noStartValidator(noStartWorkflow) must beSome
-     }
-  }
-  "orphan steps validator" should {
-     "return None for valid workflow" in {
-       orphansValidator(valid) must beNone
-     }
-     "return Some for invalid workflow" in {
-       orphansValidator(orphansWorkflow) must beSome
-     }
-  }
-  "few start steps validator" should {
-     "return None for valid workflow" in {
-       fewStartsValidator(valid) must beNone
-     }
-     "return Some for invalid workflow" in {
-       fewStartsValidator(fewStartsWorkflow) must beSome
-     }
-  }
 }
